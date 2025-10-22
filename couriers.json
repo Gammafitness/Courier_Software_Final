@@ -1,0 +1,55 @@
+{
+  "Bluedart": {
+    "file": "Bluedart (3).xlsx",
+    "sheet_name": "Bluedart",
+    "zone_rates": {
+      "West": 30,
+      "South": 25,
+      "East": 35,
+      "North": 40,
+      "Central": 28,
+      "North East": 50
+    },
+    "docket_charges": 50,
+    "fuel_surcharge_percent": 0.15,
+    "fuel_surcharge_basis": "subtotal",
+    "insurance_percent": 0.1,
+    "min_insurance_charges": 5,
+    "oda_type": "fixed",
+    "oda_fixed_charge": 100,
+    "min_total_charges": 200,
+    "green_charge": 20,
+    "green_location": "Delhi",
+    "gst_percent": 0.18,
+    "oda_case_file": "Bluedart ODA Charges copy.xlsx",
+    "oda_case_sheet": "Sheet1",
+    "oda_rate_per_km": 0
+  },
+  "Delhivery": {
+    "file": "1ZFHODpP3i8FzBsAG55NpoYpAn4mxSFXm1bQC4ktqJdo",
+    "sheet_name": "Delhivery",
+    "zone_rates": {
+      "Central": 28,
+      "East": 35,
+      "North": 40,
+      "North East": 50,
+      "South": 25,
+      "West": 30
+    },
+    "docket_charges": 100.0,
+    "fuel_surcharge_percent": 0.1,
+    "fuel_surcharge_basis": "freight",
+    "insurance_percent": 0.01,
+    "min_insurance_charges": 100.0,
+    "oda_type": "fixed",
+    "oda_fixed_charge": 1000.0,
+    "min_total_charges": 100.0,
+    "green_charge": 0.0,
+    "green_location": "",
+    "gst_percent": 0.18,
+    "oda_case_file": "",
+    "oda_case_sheet": "",
+    "oda_rate_per_km": 0.0,
+    "oda_min_rate_per_km": 0.0
+  }
+}

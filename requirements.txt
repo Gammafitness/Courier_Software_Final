@@ -1,0 +1,9 @@
+Flask>=2.1
+pandas>=1.4
+openpyxl>=3.0
+# The following are optional but needed if you want to read data from Google Sheets
+gspread>=5.7
+google-auth>=2.0
+xlsxwriter
+matplotlib
+gunicorn

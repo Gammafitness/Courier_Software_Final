@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Courier</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <!-- Navigation bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="{{ url_for('index') }}">
+                <img src="{{ url_for('static', filename='logo.png') }}" alt="Gamma Logistics">
+                <span>Gamma Logistics Software</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    {% if session.get('username') %}
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">Dashboard</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('add_courier') }}">Add Courier</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('manage_courier') }}">Manage Couriers</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('change_password') }}">Change Password</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Logout</a></li>
+                    {% else %}
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Login</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container mt-4">
+        <h1 class="mb-3">Edit Courier</h1>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="mt-3">
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+        <form method="post" class="mt-3">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Courier Name</label>
+                    <input type="text" class="form-control" value="{{ name }}" disabled>
+                </div>
+                <div class="col-md-6">
+                    <label for="file" class="form-label">Pincode File Name (Excel or Google Sheet ID)</label>
+                    <input type="text" class="form-control" id="file" name="file" value="{{ config.file }}" required>
+                    <small class="form-text text-muted">Place Excel files inside the <code>data/</code> directory. For Google Sheets, enter the sheet ID.</small>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="sheet_name" class="form-label">Sheet/Tab Name</label>
+                    <input type="text" class="form-control" id="sheet_name" name="sheet_name" value="{{ config.sheet_name }}" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="zone_rates" class="form-label">Zone Rates (JSON)</label>
+                    <textarea class="form-control" id="zone_rates" name="zone_rates" rows="3" required>{{ config.zone_rates | tojson(indent=0) }}</textarea>
+                    <small class="form-text text-muted">Provide a JSON object mapping zone names to per‑kg rates.</small>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label for="docket_charges" class="form-label">Docket Charges</label>
+                    <input type="number" step="0.01" class="form-control" id="docket_charges" name="docket_charges" value="{{ config.docket_charges }}" required>
+                </div>
+                <div class="col-md-3">
+                    <label for="fuel_surcharge_percent" class="form-label">Fuel Surcharge %</label>
+                    <input type="number" step="0.01" class="form-control" id="fuel_surcharge_percent" name="fuel_surcharge_percent" value="{{ config.fuel_surcharge_percent }}" required>
+                </div>
+                <div class="col-md-3">
+                    <label for="fuel_surcharge_basis" class="form-label">Fuel Surcharge Basis</label>
+                    <select class="form-select" id="fuel_surcharge_basis" name="fuel_surcharge_basis">
+                        <option value="freight" {% if config.fuel_surcharge_basis == 'freight' %}selected{% endif %}>Base Freight</option>
+                        <option value="subtotal" {% if config.fuel_surcharge_basis == 'subtotal' %}selected{% endif %}>Sub Total</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="insurance_percent" class="form-label">Insurance %</label>
+                    <input type="number" step="0.0001" class="form-control" id="insurance_percent" name="insurance_percent" value="{{ config.insurance_percent }}" required>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label for="min_insurance_charges" class="form-label">Min Insurance Charges</label>
+                    <input type="number" step="0.01" class="form-control" id="min_insurance_charges" name="min_insurance_charges" value="{{ config.min_insurance_charges }}" required>
+                </div>
+                <div class="col-md-3">
+                    <label for="oda_type" class="form-label">ODA Type</label>
+                    <select class="form-select" id="oda_type" name="oda_type">
+                        <option value="fixed" {% if config.oda_type == 'fixed' %}selected{% endif %}>Fixed</option>
+                        <option value="case1" {% if config.oda_type == 'case1' %}selected{% endif %}>Case 1</option>
+                        <option value="case2" {% if config.oda_type == 'case2' %}selected{% endif %}>Case 2</option>
+                        <option value="case3" {% if config.oda_type == 'case3' %}selected{% endif %}>Case 3</option>
+                        <option value="rate_per_km" {% if config.oda_type == 'rate_per_km' %}selected{% endif %}>Rate per km</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="oda_fixed_charge" class="form-label">ODA Charges (if fixed)</label>
+                    <input type="number" step="0.01" class="form-control" id="oda_fixed_charge" name="oda_fixed_charge" value="{{ config.oda_fixed_charge }}">
+                </div>
+                <div class="col-md-3">
+                    <label for="min_total_charges" class="form-label">Min Total Charges</label>
+                    <input type="number" step="0.01" class="form-control" id="min_total_charges" name="min_total_charges" value="{{ config.min_total_charges }}" required>
+                </div>
+                <div class="col-md-3">
+                    <label for="oda_rate_per_km" class="form-label">ODA Rate per km</label>
+                    <input type="number" step="0.01" class="form-control" id="oda_rate_per_km" name="oda_rate_per_km" value="{{ config.oda_rate_per_km }}">
+                    <small class="form-text text-muted">Specify the rate to multiply by the shipment weight when ODA type is Rate per km.</small>
+                </div>
+                <div class="col-md-3">
+                    <label for="oda_min_rate_per_km" class="form-label">Minimum Rate per km Charges</label>
+                    <input type="number" step="0.01" class="form-control" id="oda_min_rate_per_km" name="oda_min_rate_per_km" value="{{ config.oda_min_rate_per_km }}">
+                    <small class="form-text text-muted">If ODA type is Rate per km, the charge will be the greater of (rate × weight) or this minimum amount.</small>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label for="green_charge" class="form-label">Green Tax</label>
+                    <input type="number" step="0.01" class="form-control" id="green_charge" name="green_charge" value="{{ config.green_charge }}">
+                </div>
+                <div class="col-md-3">
+                    <label for="green_location" class="form-label">Green Tax Location</label>
+                    <input type="text" class="form-control" id="green_location" name="green_location" value="{{ config.green_location }}">
+                </div>
+                <div class="col-md-3">
+                    <label for="gst_percent" class="form-label">GST %</label>
+                    <input type="number" step="0.0001" class="form-control" id="gst_percent" name="gst_percent" value="{{ config.gst_percent }}">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Update Courier</button>
+        </form>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

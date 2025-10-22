@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gamma Logistics Software - Courier Recommendation</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <!-- Navigation bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="{{ url_for('index') }}">
+                <img src="{{ url_for('static', filename='logo.png') }}" alt="Gamma Logistics">
+                <span>Gamma Logistics Software</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    {% if session.get('username') %}
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">Dashboard</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('add_courier') }}">Add Courier</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('manage_courier') }}">Manage Couriers</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('change_password') }}">Change Password</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Logout</a></li>
+                    {% else %}
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Login</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="mt-3">
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+        <form method="post" class="row g-3 mt-3" id="recommendationForm" enctype="multipart/form-data">
+            <div class="col-12 col-md-6 col-lg-3">
+                <label for="pincode" class="form-label">Pincode</label>
+                <input type="text" class="form-control" name="pincode" id="pincode" value="{{ pincode_input | default('') }}" placeholder="e.g. 144002, 110011">
+            </div>
+            <div class="col-12 col-md-6 col-lg-3">
+                <label for="weight" class="form-label">Weight (kg)</label>
+                <input type="text" class="form-control" name="weight" id="weight" value="{{ weight_input | default('') }}" placeholder="e.g. 100,20,50">
+            </div>
+            <div class="col-12 col-md-6 col-lg-3">
+                <label for="value" class="form-label">Value of shipment (optional)</label>
+                <input type="text" class="form-control" name="value" id="value" value="{{ value_input | default('') }}" placeholder="e.g. 5000,10000">
+            </div>
+            <div class="col-12 col-md-6 col-lg-3 d-flex align-items-end">
+                <div class="d-flex w-100">
+                    <button type="submit" class="btn btn-primary w-75 me-2">Get Recommendation</button>
+                    <button type="button" class="btn btn-secondary w-25" id="resetBtn">Reset</button>
+                </div>
+            </div>
+            <!-- Excel upload input -->
+            <div class="col-12 col-md-6 col-lg-3">
+                <label for="excel_file" class="form-label">Upload Excel (Pincode, Weight, Value)</label>
+                <input type="file" class="form-control" id="excel_file" name="excel_file" accept=".xls,.xlsx">
+                <small class="form-text text-muted">Optional: upload an Excel file with columns for Pincode, Weight and Value.</small>
+            </div>
+            <!-- Button to download template -->
+            <div class="col-12 col-md-6 col-lg-3 d-flex align-items-end">
+                <a href="{{ url_for('download_template') }}" class="btn btn-info w-100">Download Template</a>
+            </div>
+        </form>
+        <!-- Loading spinner/text -->
+        <div id="loadingSpinner" class="text-center mt-3" style="display:none;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <div>Fetching recommendations...</div>
+        </div>
+
+        {% if results %}
+        <div class="d-flex justify-content-between align-items-center mt-5">
+            <h2 class="mb-0">Results</h2>
+            <div>
+                <a href="{{ url_for('download_results', fmt='excel') }}" class="btn btn-success me-2">Download Excel</a>
+                <a href="{{ url_for('download_results', fmt='pdf') }}" class="btn btn-danger">Download PDF</a>
+            </div>
+        </div>
+        {% for group in results %}
+            <h4 class="mt-4">Pincode: {{ group.pincode }}{% if group.weight %} | Weight: {{ group.weight }} kg{% endif %}{% if group.value is not none %} | Value: {{ group.value }}{% endif %}</h4>
+            <div class="table-responsive mb-4">
+                <table class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Courier</th>
+                            <th>Status</th>
+                            <th>Location</th>
+                            <th>State</th>
+                            <th>Zone</th>
+                            <th>Zone Rate</th>
+                            <th>ODA Distance</th>
+                            <th>Base Freight</th>
+                            <th>Docket Charges</th>
+                            <th>Insurance</th>
+                            <th>Green Tax</th>
+                            <th>ODA Charges</th>
+                            <th>Fuel Surcharge</th>
+                            <th>Sub Total</th>
+                            <th>GST</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in group.couriers %}
+                        <tr>
+                            <td>{{ r.courier }}</td>
+                            <td>{{ r.status }}</td>
+                            {% if r.status|lower not in ['not serviceable'] and 'error loading data' not in r.status|lower and 'zone' in r %}
+                                <td>{{ r.location }}</td>
+                                <td>{{ r.state }}</td>
+                                <td>{{ r.zone }}</td>
+                                <td>{{ r.zone_rate }}</td>
+                                <td>{{ r.oda_distance }}</td>
+                                <td>{{ '%.2f' % r.base_freight }}</td>
+                                <td>{{ '%.2f' % r.docket }}</td>
+                                <td>{{ '%.2f' % r.insurance }}</td>
+                                <td>{{ '%.2f' % r.green_tax }}</td>
+                                <td>{{ '%.2f' % r.oda_charge }}</td>
+                                <td>{{ '%.2f' % r.fuel }}</td>
+                                <td>{{ '%.2f' % r.subtotal }}</td>
+                                <td>{{ '%.2f' % r.gst }}</td>
+                                <td>{{ '%.2f' % r.total }}</td>
+                            {% else %}
+                                <td colspan="14">{{ r.status }}</td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endfor %}
+        {% endif %}
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    // Show loading spinner on form submission
+    const form = document.getElementById('recommendationForm');
+    const spinner = document.getElementById('loadingSpinner');
+    if (form) {
+        form.addEventListener('submit', function() {
+            if (spinner) {
+                spinner.style.display = 'block';
+            }
+        });
+    }
+    // Reset button clears input fields and hides results
+    const resetBtn = document.getElementById('resetBtn');
+    if (resetBtn) {
+        resetBtn.addEventListener('click', function() {
+            document.getElementById('pincode').value = '';
+            document.getElementById('weight').value = '';
+            document.getElementById('value').value = '';
+            // Hide spinner (if visible)
+            if (spinner) spinner.style.display = 'none';
+        });
+    }
+    </script>
+</body>
+</html>
