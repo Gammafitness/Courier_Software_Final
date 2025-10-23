@@ -33,7 +33,7 @@
   },
   "TCI_Express": {
     "file": "1ZFHODpP3i8FzBsAG55NpoYpAn4mxSFXm1bQC4ktqJdo",
-    "sheet_name": "TCI_Express",
+    "sheet_name": "TCI-Express",
     "zone_rates": {
       "ANDAMAN AND NICOBAR ISLANDS": 33,
       "ANDHRA PRADESH": 9.35,
@@ -66,13 +66,13 @@
       "PUNJAB": 6.6,
       "RAJASTHAN": 6.6,
       "SIKKIM": 24.2,
+      "SRINAGAR": 14.3,
       "TAMIL NADU": 9.35,
       "TELANGANA": 9.35,
       "TRIPURA": 24.2,
       "UTTAR PRADESH": 6.6,
       "UTTARAKHAND": 6.6,
-      "WEST BENGAL": 10.45,
-      "SRINAGAR": 14.3
+      "WEST BENGAL": 10.45
     },
     "docket_charges": 50.0,
     "fuel_surcharge_percent": 0.12,
