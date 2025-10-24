@@ -95,8 +95,8 @@
     "sheet_name": "XP-India",
     "zone_rates": {
       "East": 8.75,
-      "North East": 11.5,
-      "North East 1": 20,
+      "North East": 20,
+      "North East 1": 11.5,
       "North": 5.5,
       "South": 8.75,
       "South 2": 13,
