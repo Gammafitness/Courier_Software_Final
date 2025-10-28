@@ -147,6 +147,6 @@
     "oda_case_file": "",
     "oda_case_sheet": "",
     "oda_rate_per_km": 4.0,
-    "oda_min_rate_per_km": 750.0
+    "oda_min_rate_per_km": 850.0
   }
 }
