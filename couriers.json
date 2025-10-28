@@ -138,15 +138,15 @@
     "fuel_surcharge_basis": "freight",
     "insurance_percent": 0.001,
     "min_insurance_charges": 150.0,
-    "oda_type": "rate_per_km",
-    "oda_fixed_charge": 0.0,
-    "min_total_charges": 350.0,
+    "oda_type": "fixed",
+    "oda_fixed_charge": 850.0,
+    "min_total_charges": 0.0,
     "green_charge": 100.0,
     "green_location": "Delhi",
     "gst_percent": 0.18,
     "oda_case_file": "",
     "oda_case_sheet": "",
-    "oda_rate_per_km": 4.0,
-    "oda_min_rate_per_km": 850.0
+    "oda_rate_per_km": 0.0,
+    "oda_min_rate_per_km": 0.0
   }
 }
