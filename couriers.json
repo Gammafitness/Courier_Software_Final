@@ -139,7 +139,7 @@
     "insurance_percent": 0.001,
     "min_insurance_charges": 150.0,
     "oda_type": "fixed",
-    "oda_fixed_charge": 850.0,
+    "oda_fixed_charge": 800.0,
     "min_total_charges": 0.0,
     "green_charge": 100.0,
     "green_location": "Delhi",
